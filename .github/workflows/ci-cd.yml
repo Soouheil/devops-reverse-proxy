@@ -5,21 +5,40 @@ on:
     branches: [ "main" ]
 
 jobs:
-  build:
+  build-and-push:
     runs-on: ubuntu-latest
 
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
 
+      # -----------------------
+      # Login to Docker Hub
+      # -----------------------
+      - name: Docker Hub Login
+        uses: docker/login-action@v3
+        with:
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
+
+      # -----------------------
+      # Build Backend image
+      # -----------------------
       - name: Build backend Docker image
-        run: docker build -t backend ./backend
+        uses: docker/build-push-action@v5
+        with:
+          context: ./backend
+          push: true
+          tags: ${{ secrets.DOCKERHUB_USERNAME }}/devops-backend:latest
 
-      - name: Test backend Node.js server
-        run: docker run --rm backend node --version
+      # -----------------------
+      # Build Reverse Proxy image (optional later)
+      # -----------------------
+      - name: Build reverse-proxy Docker image
+        if: false  # on l'activera plus tard
+        uses: docker/build-push-action@v5
+        with:
+          context: ./reverse-proxy
+          push: true
+          tags: ${{ secrets.DOCKERHUB_USERNAME }}/reverse-proxy:latest
 
-      - name: Validate nginx config
-        run: nginx -t || true
-
-      - name: Finish
-        run: echo "✅ Build completed successfully"
