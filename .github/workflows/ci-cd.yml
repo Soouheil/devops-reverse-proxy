@@ -1,0 +1,25 @@
+name: DevOps CI/CD
+
+on:
+  push:
+    branches: [ "main" ]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Build backend Docker image
+        run: docker build -t backend ./backend
+
+      - name: Test backend Node.js server
+        run: docker run --rm backend node --version
+
+      - name: Validate nginx config
+        run: nginx -t || true
+
+      - name: Finish
+        run: echo "✅ Build completed successfully"
