@@ -1,0 +1,13 @@
+<!DOCTYPE html>
+<html>
+<head><title>DevOps Project</title></head>
+<body>
+  <h1>Frontend OK</h1>
+  <p id="result"></p>
+  <script>
+    fetch('/api')
+      .then(res => res.json())
+      .then(data => { document.getElementById('result').textContent = data.message })
+  </script>
+</body>
+</html>
